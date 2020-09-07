@@ -10,6 +10,8 @@ from trezor.messages import InputScriptType, OutputScriptType
 from apps.common import coins
 from apps.bitcoin.authorization import CoinJoinAuthorization
 from apps.bitcoin.sign_tx.approvers import CoinJoinApprover
+from apps.bitcoin.sign_tx.hash143 import Hash143
+from apps.bitcoin.sign_tx.tx_info import TxInfo
 
 
 class TestApprover(unittest.TestCase):
@@ -117,7 +119,7 @@ class TestApprover(unittest.TestCase):
             else:
                 await_result(approver.add_external_output(txo, script_pubkey=bytes(22)))
 
-        await_result(approver.approve_tx())
+        await_result(approver.approve_tx(TxInfo(tx, Hash143()), {}))
 
     def test_coinjoin_input_account_depth_mismatch(self):
         authorization = CoinJoinAuthorization(self.msg_auth, None, self.coin)
