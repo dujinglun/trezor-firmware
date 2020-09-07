@@ -9,7 +9,7 @@ from trezor.utils import ensure
 if False:
     from apps.common.coininfo import CoinInfo
     from typing import Dict
-    from trezor.messages.TxInputType import EnumTypeInputScriptType
+    from trezor.messages.TxInputType import EnumTypeInputScriptType, TxInputType
     from trezor.messages.TxOutputType import EnumTypeOutputScriptType
 
 
@@ -84,3 +84,19 @@ def decode_bech32_address(prefix: str, address: str) -> bytes:
     if witver != _BECH32_WITVER:
         raise wire.ProcessError("Invalid address witness program")
     return bytes(raw)
+
+
+def input_is_segwit(txi: TxInputType) -> bool:
+    return txi.script_type in SEGWIT_INPUT_SCRIPT_TYPES or (
+        txi.script_type == InputScriptType.EXTERNAL and txi.witness is not None
+    )
+
+
+def input_is_nonsegwit(txi: TxInputType) -> bool:
+    return txi.script_type in NONSEGWIT_INPUT_SCRIPT_TYPES or (
+        txi.script_type == InputScriptType.EXTERNAL and txi.witness is None
+    )
+
+
+def input_is_external(txi: TxInputType) -> bool:
+    return txi.script_type == InputScriptType.EXTERNAL
