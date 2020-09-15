@@ -59,6 +59,30 @@ async def confirm_output(ctx: wire.Context, output: TxOutput, coin: CoinInfo) ->
     await require_confirm(ctx, text, ButtonRequestType.ConfirmOutput)
 
 
+async def confirm_replacement(ctx: wire.Context, description: str, txid: bytes) -> None:
+    text = Text(description, ui.ICON_SEND, ui.GREEN)
+    text.normal("Confirm transaction ID:")
+    hex_data = hexlify(txid).decode()
+    if len(hex_data) >= 18 * 4:
+        hex_data = hex_data[: (18 * 4 - 3)] + "..."
+    text.mono(*split_op_return(hex_data))
+    await require_confirm(ctx, text, ButtonRequestType.SignTx)
+
+
+async def confirm_modify_fee(
+    ctx: wire.Context, fee_change: int, fee_new: int, coin: CoinInfo
+) -> None:
+    text = Text("Fee modification", ui.ICON_SEND, ui.GREEN)
+    if fee_change >= 0:
+        text.normal("Increase your fee by:")
+    else:
+        text.normal("Decrease your fee by:")
+    text.bold(format_coin_amount(abs(fee_change), coin))
+    text.normal("New transaction fee:")
+    text.bold(format_coin_amount(fee_new, coin))
+    await require_hold_to_confirm(ctx, text, ButtonRequestType.SignTx)
+
+
 async def confirm_joint_total(
     ctx: wire.Context, spending: int, total: int, coin: CoinInfo
 ) -> None:
