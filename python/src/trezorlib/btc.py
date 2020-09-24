@@ -277,6 +277,16 @@ def sign_tx(
 
             res = client.call(messages.TxAck(tx=msg))
 
+        elif res.request_type == R.TXORIGINPUT:
+            msg = messages.TransactionType()
+            msg.inputs = [current_tx.inputs[res.details.request_index]]
+            res = client.call(messages.TxAck(tx=msg))
+
+        elif res.request_type == R.TXORIGOUTPUT:
+            msg = messages.TransactionType()
+            msg.outputs = [current_tx.outputs[res.details.request_index]]
+            res = client.call(messages.TxAck(tx=msg))
+
         elif res.request_type == R.TXEXTRADATA:
             o, l = res.details.extra_data_offset, res.details.extra_data_len
             msg = messages.TransactionType()
