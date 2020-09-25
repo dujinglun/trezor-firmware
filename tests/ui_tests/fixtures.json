@@ -326,6 +326,7 @@
 "test_msg_signtx_replacement.py::test_p2pkh_fee_bump": "c91fc4ecd2cba9685b56008713c11f13f865f156971df591f31fd27acb79a057",
 "test_msg_signtx_replacement.py::test_p2wpkh_in_p2sh_remove_change": "b20c54e6c514bbc3f5f7d39813951014568a27bde5b06582a0e519dd0c8919d7",
 "test_msg_signtx_replacement.py::test_p2wpkh_payjoin": "fcc4c42fcf1e7dab78e49aa0c963f737293468adea2777cd729988431c37fab2",
+"test_msg_signtx_replacement.py::test_tx_meld": "e72c263c1edda2c14fa4b1b81eebb667fa9605318069a34b74cf009c84d6a03a",
 "test_msg_signtx_segwit.py-test_attack_change_input_address": "5ae71202c062ef7942626a80a4ceeb8d8c4ea5065a97f0de6a97505e9cb82c2c",
 "test_msg_signtx_segwit.py-test_attack_mixed_inputs": "f127a4766b23d9b6dfe0c41f9cf1ed13c0a883ea4e92e55961bcaf44bd152c02",
 "test_msg_signtx_segwit.py-test_send_multisig_1": "958a0741070e057dcb889b2000e5487d391bc513e4a5d86193a355261c5f361b",
