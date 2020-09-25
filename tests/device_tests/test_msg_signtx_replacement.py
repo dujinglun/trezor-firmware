@@ -49,6 +49,15 @@ TXHASH_e4b5b2 = bytes.fromhex(
 TXHASH_70f987 = bytes.fromhex(
     "70f9871eb03a38405cfd7a01e0e1448678132d815e2c9f552ad83ae23969509e"
 )
+TXHASH_334cd7 = bytes.fromhex(
+    "334cd7ad982b3b15d07dd1c84e939e95efb0803071648048a7f289492e7b4c8a"
+)
+TXHASH_5e7667 = bytes.fromhex(
+    "5e7667690076ae4737e2f872005de6f6b57592f32108ed9b301eeece6de24ad6"
+)
+TXHASH_efaa41 = bytes.fromhex(
+    "efaa41ff3e67edf508846c1a1ed56894cfd32725c590300108f40c9edc1aac35"
+)
 
 
 @pytest.mark.skip_t1
@@ -229,6 +238,74 @@ def test_p2wpkh_payjoin(client):
             "Testnet",
             [inp1, inp2],
             [out1, out2],
-            details=details,
+            lock_time=1516634,
             prev_txes=TX_CACHE_TESTNET,
+        )
+
+
+@pytest.mark.skip_t1
+def test_p2wpkh_in_p2sh_remove_change(client):
+    # Test fee bump with change-output removal. Originally fee was 3780, now 98060.
+
+    inp1 = messages.TxInputType(
+        address_n=parse_path("49h/1h/0h/0/4"),
+        amount=100000,
+        script_type=messages.InputScriptType.SPENDP2SHWITNESS,
+        prev_hash=TXHASH_5e7667,
+        prev_index=1,
+        orig_hash=TXHASH_334cd7,
+        orig_index=0,
+    )
+
+    inp2 = messages.TxInputType(
+        address_n=parse_path("49h/1h/0h/0/3"),
+        amount=998060,
+        script_type=messages.InputScriptType.SPENDP2SHWITNESS,
+        prev_hash=TXHASH_efaa41,
+        prev_index=0,
+        orig_hash=TXHASH_334cd7,
+        orig_index=1,
+    )
+
+    out1 = messages.TxOutputType(
+        # Actually m/49'/1'/0'/0/5.
+        address="2MvUUSiQZDSqyeSdofKX9KrSCio1nANPDTe",
+        amount=1000000,
+        orig_hash=TXHASH_334cd7,
+        orig_index=0,
+    )
+
+    with client:
+        client.set_expected_responses(
+            [
+                request_input(0),
+                request_meta(TXHASH_334cd7),
+                request_orig_input(0, TXHASH_334cd7),
+                request_input(1),
+                request_orig_input(1, TXHASH_334cd7),
+                request_output(0),
+                request_orig_output(0, TXHASH_334cd7),
+                request_orig_output(1, TXHASH_334cd7),
+                messages.ButtonRequest(code=B.SignTx),
+                messages.ButtonRequest(code=B.SignTx),
+                request_input(0),
+                request_meta(TXHASH_5e7667),
+                request_input(0, TXHASH_5e7667),
+                request_output(0, TXHASH_5e7667),
+                request_output(1, TXHASH_5e7667),
+                request_input(1),
+                request_meta(TXHASH_efaa41),
+                request_input(0, TXHASH_efaa41),
+                request_output(0, TXHASH_efaa41),
+                request_orig_input(0, TXHASH_334cd7),
+                request_input(0),
+                request_input(1),
+                request_output(0),
+                request_input(0),
+                request_input(1),
+                request_finished(),
+            ]
+        )
+        _, serialized_tx = btc.sign_tx(
+            client, "Testnet", [inp1, inp2], [out1], prev_txes=TX_CACHE_TESTNET,
         )
