@@ -20,7 +20,7 @@ stdenv.mkDerivation {
     libjpeg
     libusb1
     openssl
-    pipenv
+    poetry
     pkgconfig
     poetry
     protobuf3_6
